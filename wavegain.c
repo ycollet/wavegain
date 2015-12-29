@@ -55,6 +55,10 @@
 #include "recurse.h"
 #endif
 
+#ifdef __unix__
+#include <unistd.h>
+#endif
+
 /*Gcc uses LL as a suffix for long long int (64 bit) types - Marc Brooker 8/4/2004*/
 #ifdef __GNUC__
 #define ROUND64(x)   ( doubletmp = (x) + Dither.Add + (Int64_t)0x001FFFFD80000000LL, *(Int64_t*)(&doubletmp) - (Int64_t)0x433FFFFD80000000LL )
