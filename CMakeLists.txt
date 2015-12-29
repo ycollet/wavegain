@@ -33,6 +33,9 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
       CACHE PATH "Cbc install prefix" FORCE)
 endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+                      ${CMAKE_SOURCE_DIR}/cmake)
+
 include(CheckIncludeFile)
 
 check_include_file("dirent.h"     HAVE_DIRENT_H)
@@ -80,6 +83,28 @@ include_directories(${CMAKE_SOURCE_DIR}
 add_definitions(-DHAVE_CONFIG_H)
 if (WIN32)
   add_definitions(-DHAVE_SSE2 -D_CRT_SECURE_NO_WARNINGS)
+else ()
+  find_package(SSE)
+
+  if (SSE4_2_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
+  else ()
+    if (SSE4_1_FOUND)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+    else ()
+      if (SSSE3_FOUND)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mssse3")
+      else ()
+	if (SSE3_FOUND)
+	  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse3")
+	else ()
+	  if (SSE2_FOUND)
+	    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
+	  endif ()
+	endif ()
+      endif ()
+    endif ()
+  endif ()
 endif ()
 
 set(WAVGAIN_SRCS audio.c
